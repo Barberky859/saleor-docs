@@ -1,0 +1,110 @@
+---
+title: Marketplace
+---
+
+import CompactCard from "@site/components/CompactCard";
+import RecipeResourceGrid from "@site/components/RecipeResourceGrid"
+
+# Marketplace Recipe
+
+Saleor's marketplace functionality allows you to create a platform where multiple sellers can list their products for sale. This recipe provides a comprehensive guide to setting up and managing a marketplace in Saleor.
+
+## Product and Vendor Model
+
+- TODO: think of an example that well ilustrates a marketplace and use it when going through each point
+- each product has attribute reference of type page with name "Vendor"
+- that attribute reference links to "Vendor" pages
+- vendor pages can have descriptive attributes (photo, bio, etc.)
+- subheading: Commodity vs. Unique Marketplace
+    - commodity
+        - commodity is a marketplace where you have top-level product page with multiple offers (think: amazon)
+        - in commodity marketplace, the top-level product is a page that links to actual product offers (products) through product attribute reference
+        - top-level product page holds the descriptive product information, and the product offers hold the prices etc.
+        - if you use page as the top-level products, then on the homepage/search, you have to search for pages, not products. same goes for organizing them: you cant use categories or collections, you have to organize them through pages. TODO: give examples on that
+    - unique - (think: etsy) each product is unique so we dont need to organize them top-level
+- another problem is SKUs. sometimes you want to have variants that have the same SKU (because they represent the same product, sold by different vendors). saleor wont allow you to have duplicate SKUs. in that case, you would add a suffix to the end of each SKU and then strip that suffix during fulfillment by an app
+
+<RecipeResourceGrid>
+    <CompactCard
+        name="Modeling Overview"
+        description="Learn more about modeling in Saleor."
+        link="/developer/modeling"
+    />
+</RecipeResourceGrid>
+    
+## Fulfillment & Shipping
+
+- since each product has link to vendor, each order line will have all the necessary information for fulfilling by different vendors
+- TODO: write a query that retrieves product references from order line
+
+- if each vendor sends their package separately, a shipping app can sum shipping methods for each vendor and return it as one sum, while detailing each vendor's shipping price contribution through metafields (metadata etc.)
+
+<RecipeResourceGrid>
+    <CompactCard
+        name="Fulfillment Overview"
+        description="Learn more about fulfillment in Saleor."
+        link="/developer/order/order-fulfillment"
+    />
+    <CompactCard
+        name="Custom Shipping Recipe"
+        description="TODO"
+        link="/recipes/custom-shipping"
+    />
+    
+</RecipeResourceGrid>
+
+## Payments
+
+- ideally, marketplace could use existing payment solutions (e.g. Stripe App) and add the payout functionality on top of it
+- so customers pay as usual but then asynchronously, you have to send payouts to each vendor that was involved in the order
+
+<RecipeResourceGrid>
+    <CompactCard
+        name="How to Build a Payment App"
+        description="TODO."
+        link="developer/extending/apps/building-payment-app"
+    />    
+</RecipeResourceGrid>
+
+## Taxes
+
+- vendors can have different tax rules so it may be needed to add a tax app that would return tax rates specific to the vendor
+
+
+<RecipeResourceGrid>
+    <CompactCard
+        name="Taxes Overview"
+        description="TODO."
+        link="developer/taxes"
+    />    
+</RecipeResourceGrid>
+
+## Vendor Portal
+
+the biggest time sink is building a vendor portal where vendor can manage their products, see their orders, etc. 
+
+saleor dashboard is not suitable for this because we dont have a "vendor" entity in saleor, so you cant have granual access control (e.g., "only display this vendor's products")
+
+so you need to rebuild it in a vendor dashboard 
+
+it would:
+- allow to edit vendor profile
+- create products
+- see vendor orders (we would need to query all the orders, filter them by whether the vendor was involved in one of the lines and then strip all the information about potential other vendors involved)
+- track sales numbers
+- set up vendoor-specific discounts (through selecting a group of products, since products belong to vendor)
+
+## Operator Portal 
+
+to saleor dashboard, we would add an app that would extend the UI with new view for managing the marketplace:
+- onboarding vendors
+- setting policies (e.g., the comission fee)
+- tracking health of marketplace
+
+<RecipeResourceGrid>
+    <CompactCard
+        name="Extending Dashboard"
+        description="TODO."
+        link="recipes/extending-dashboard"
+    />    
+</RecipeResourceGrid>
